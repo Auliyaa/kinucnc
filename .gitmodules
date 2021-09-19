@@ -1,0 +1,6 @@
+[submodule "vendor/tinyspline"]
+	path = vendor/tinyspline
+	url = https://github.com/Auliyaa/tinyspline.git
+[submodule "vendor/nanosvg"]
+	path = vendor/nanosvg
+	url = https://github.com/Auliyaa/nanosvg.git

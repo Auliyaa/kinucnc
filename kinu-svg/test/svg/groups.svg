@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="30mm"
+   height="30mm"
+   viewBox="0 0 30 30"
+   version="1.1"
+   id="svg11"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs8" />
+  <g
+     id="layer1">
+    <g
+       id="g265">
+      <g
+         id="g310">
+        <rect
+           style="fill:#0000ff;fill-rule:evenodd;stroke-width:0.264583"
+           id="rect67"
+           width="10"
+           height="10"
+           x="0"
+           y="0" />
+        <g
+           id="g314">
+          <rect
+             style="fill:#0000ff;fill-rule:evenodd;stroke-width:0.264583"
+             id="rect67-3"
+             width="10"
+             height="10"
+             x="10"
+             y="2.3841858e-07" />
+          <rect
+             style="fill:#0000ff;fill-rule:evenodd;stroke-width:0.264583"
+             id="rect67-62"
+             width="10"
+             height="10"
+             x="20"
+             y="-2.3841858e-07" />
+        </g>
+      </g>
+    </g>
+    <g
+       id="g270">
+      <rect
+         style="fill:#0000ff;fill-rule:evenodd;stroke-width:0.264583"
+         id="rect67-6"
+         width="10"
+         height="10"
+         x="-9.5367432e-07"
+         y="10" />
+      <g
+         id="g305">
+        <rect
+           style="fill:#0000ff;fill-rule:evenodd;stroke-width:0.264583"
+           id="rect67-7"
+           width="10"
+           height="10"
+           x="9.999999"
+           y="10" />
+        <rect
+           style="fill:#0000ff;fill-rule:evenodd;stroke-width:0.264583"
+           id="rect67-9"
+           width="10"
+           height="10"
+           x="20"
+           y="10" />
+      </g>
+    </g>
+    <g
+       id="g275">
+      <g
+         id="g282">
+        <rect
+           style="fill:#0000ff;fill-rule:evenodd;stroke-width:0.264583"
+           id="rect67-5"
+           width="10"
+           height="10"
+           x="-9.5367432e-07"
+           y="20" />
+      </g>
+      <g
+         id="g279">
+        <rect
+           style="fill:#0000ff;fill-rule:evenodd;stroke-width:0.264583"
+           id="rect67-35"
+           width="10"
+           height="10"
+           x="10"
+           y="20" />
+        <rect
+           style="fill:#0000ff;fill-rule:evenodd;stroke-width:0.264583"
+           id="rect67-1"
+           width="10"
+           height="10"
+           x="20"
+           y="20" />
+      </g>
+    </g>
+  </g>
+</svg>

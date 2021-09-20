@@ -99,7 +99,8 @@ std::vector<svg_t::shape_t> svg_t::segments(size_t lsteps, size_t thread_count) 
     }
   };
 
-  auto img = nsvgParse(const_cast<char*>(_data.c_str()), "mm", DPI);
+  std::string data_cpy(_data.c_str(), _data.size());
+  auto img = nsvgParse(const_cast<char*>(data_cpy.c_str()), "mm", DPI);
 
   auto shape = img->shapes;
   while (shape != nullptr)
@@ -120,6 +121,8 @@ std::vector<svg_t::shape_t> svg_t::segments(size_t lsteps, size_t thread_count) 
   {
     result.insert(result.end(), bucket.begin(), bucket.end());
   }
+
+  nsvgDelete(img);
 
   return result;
 }

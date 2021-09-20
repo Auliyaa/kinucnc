@@ -9,6 +9,10 @@
 
 #include <pugixml.hpp>
 
+#include <tinysplinecxx.h>
+
+#include <ctpl_stl.h>
+
 using namespace kinu::svg;
 
 // undo px conversion made by nanosvg, round to 1/1000
@@ -66,9 +70,56 @@ std::string svg_t::id() const
   return _id;
 }
 
-std::vector<std::tuple<double, double>> svg_t::segments() const
+std::vector<svg_t::shape_t> svg_t::segments(size_t lsteps, size_t thread_count) const
 {
-  // TODO: load image through nanosvg & flatten all beziers
-  // TODO: multithreaded ?
-  return {};
+  std::vector<std::vector<svg_t::shape_t>> buckets(thread_count);
+  ctpl::thread_pool pool;
+  pool.resize(thread_count);
+  auto worker = [&](int id, NSVGpath* path) -> void
+  {
+    for (size_t ii = 0; ii < path->npts-1; ii += 3)
+    {
+      float* p = &path->pts[ii*2];
+
+      tinyspline::BSpline spline(4,2,3);  // 4 control points, 2D, cubic spline
+      spline.setControlPoints({
+                                p[0],p[1],
+                                p[2],p[3],
+                                p[4],p[5],
+                                p[6],p[7]
+                              });
+
+      shape_t shape;
+      for (size_t lstep=0; lstep<=lsteps;++lstep)
+      {
+        auto p = spline.eval(double(lstep)/double(lsteps)).result();
+        shape.push_back({p[0],p[1]});
+      }
+      buckets[id].emplace_back(shape);
+    }
+  };
+
+  auto img = nsvgParse(const_cast<char*>(_data.c_str()), "mm", DPI);
+
+  auto shape = img->shapes;
+  while (shape != nullptr)
+  {
+    auto path = shape->paths;
+    while (path != nullptr)
+    {
+      pool.push(std::bind(worker, std::placeholders::_1, path));
+      path = path->next;
+    }
+    shape = shape->next;
+  }
+  pool.stop(true); // wait for generation
+
+  // merge buckets
+  std::vector<svg_t::shape_t> result;
+  for (const auto& bucket : buckets)
+  {
+    result.insert(result.end(), bucket.begin(), bucket.end());
+  }
+
+  return result;
 }

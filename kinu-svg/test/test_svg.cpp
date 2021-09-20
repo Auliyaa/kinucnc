@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <chrono>
 #include <kinu/svg.h>
 
 #ifndef SVG_FOLDER
@@ -53,4 +54,21 @@ TEST(svg, subgroups)
     EXPECT_EQ(0, group_2_subs[0].subgroups().size());
     EXPECT_EQ(0, group_2_subs[1].subgroups().size());
   }
+}
+
+TEST(svg, segments)
+{
+  auto svg = kinu::svg::svg_t::from_file(SVG_FOLDER"/square-10mm.svg");
+  auto segments = svg.segments(1000);
+}
+
+TEST(svg, stress)
+{
+  auto svg = kinu::svg::svg_t::from_file(SVG_FOLDER"/stress.svg");
+  auto before = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+  auto segments = svg.segments(1000);
+  auto after = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+  auto took = after-before;
+
+  std::cout << "took " << took << "ms to compute " << segments.size() << " segments" << std::endl;
 }

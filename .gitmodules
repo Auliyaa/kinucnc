@@ -4,3 +4,6 @@
 [submodule "vendor/nanosvg"]
 	path = vendor/nanosvg
 	url = https://github.com/Auliyaa/nanosvg.git
+[submodule "vendor/CTPL"]
+	path = vendor/CTPL
+	url = https://github.com/Auliyaa/CTPL.git

@@ -6,6 +6,8 @@ add_library(kinu-svg STATIC
 target_link_libraries(kinu-svg PUBLIC
   nanosvg
   pugixml::shared
+  tinyspline::static
+  ctpl
 )
 
 target_include_directories(kinu-svg PUBLIC

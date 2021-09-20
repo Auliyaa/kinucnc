@@ -15,13 +15,16 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
+# pugixml
+find_package(pugixml REQUIRED)
+
+# gtest
 if(KINU_TESTS)
-  # gtest
   enable_testing()
   find_package(GTest REQUIRED)
 endif(KINU_TESTS)
 
-# external libraries
+# builtin external libraries
 add_subdirectory(vendor)
 
 # kinu-svg

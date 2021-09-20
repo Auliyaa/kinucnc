@@ -6,8 +6,6 @@
 
 #include <memory>
 
-struct NSVGimage;
-
 namespace kinu::svg
 {
 
@@ -18,19 +16,20 @@ public:
 
   static svg_t from_file(const std::string& path);
 
-  svg_t(const char* buf);
-  svg_t(const svg_t&)=delete;
-  svg_t(svg_t&&);
+  svg_t(const std::string& data, const std::string& id);
+  svg_t(const svg_t&)=default;
+  svg_t(svg_t&&)=default;
   virtual ~svg_t();
 
-  std::vector<svg_t> groups() const;
-  std::vector<std::tuple<double,double>> segments(double lfactor) const;
+  std::vector<svg_t> subgroups() const;
+  std::string id() const;
 
-  double width() const;
-  double height() const;
+  std::vector<std::tuple<double,double>> segments() const;
+
 
 private:
-  std::unique_ptr<NSVGimage, void(*)(NSVGimage*)> _img;
+  std::string _data;
+  std::string _id;
 };
 
 }

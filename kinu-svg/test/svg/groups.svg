@@ -14,9 +14,9 @@
   <g
      id="layer1">
     <g
-       id="g265">
+       id="group.0">
       <g
-         id="g310">
+         id="group.0.0">
         <rect
            style="fill:#0000ff;fill-rule:evenodd;stroke-width:0.264583"
            id="rect67"
@@ -25,7 +25,7 @@
            x="0"
            y="0" />
         <g
-           id="g314">
+           id="group.0.0.0">
           <rect
              style="fill:#0000ff;fill-rule:evenodd;stroke-width:0.264583"
              id="rect67-3"
@@ -44,7 +44,7 @@
       </g>
     </g>
     <g
-       id="g270">
+       id="group.1">
       <rect
          style="fill:#0000ff;fill-rule:evenodd;stroke-width:0.264583"
          id="rect67-6"
@@ -53,7 +53,7 @@
          x="-9.5367432e-07"
          y="10" />
       <g
-         id="g305">
+         id="group.1.0">
         <rect
            style="fill:#0000ff;fill-rule:evenodd;stroke-width:0.264583"
            id="rect67-7"
@@ -71,9 +71,9 @@
       </g>
     </g>
     <g
-       id="g275">
+       id="group.2">
       <g
-         id="g282">
+         id="group.2.0">
         <rect
            style="fill:#0000ff;fill-rule:evenodd;stroke-width:0.264583"
            id="rect67-5"
@@ -83,7 +83,7 @@
            y="20" />
       </g>
       <g
-         id="g279">
+         id="group.2.1">
         <rect
            style="fill:#0000ff;fill-rule:evenodd;stroke-width:0.264583"
            id="rect67-35"

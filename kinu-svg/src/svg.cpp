@@ -9,8 +9,6 @@
 
 #include <pugixml.hpp>
 
-#include <tinysplinecxx.h>
-
 #include <ctpl_stl.h>
 
 using namespace kinu::svg;
@@ -70,7 +68,18 @@ std::string svg_t::id() const
   return _id;
 }
 
-std::vector<svg_t::shape_t> svg_t::segments(size_t lsteps, size_t thread_count) const
+svg_t::shape_t svg_t::default_processor(const tinyspline::BSpline& spline, size_t lsteps)
+{
+  svg_t::shape_t res;
+  for (size_t lstep=0; lstep<=lsteps;++lstep)
+  {
+    auto p = spline.eval(double(lstep)/double(lsteps)).result();
+    res.push_back({p[0],p[1]});
+  }
+  return res;
+}
+
+std::vector<svg_t::shape_t> svg_t::shapes(size_t lsteps, bspline_processor_t processor, size_t thread_count) const
 {
   std::vector<std::vector<svg_t::shape_t>> buckets(thread_count);
   ctpl::thread_pool pool;
@@ -89,12 +98,7 @@ std::vector<svg_t::shape_t> svg_t::segments(size_t lsteps, size_t thread_count) 
                                 p[6],p[7]
                               });
 
-      shape_t shape;
-      for (size_t lstep=0; lstep<=lsteps;++lstep)
-      {
-        auto p = spline.eval(double(lstep)/double(lsteps)).result();
-        shape.push_back({p[0],p[1]});
-      }
+      shape_t shape = processor(spline,lsteps);
       buckets[id].emplace_back(shape);
     }
   };

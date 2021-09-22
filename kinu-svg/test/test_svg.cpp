@@ -56,55 +56,55 @@ TEST(svg, subgroups)
   }
 }
 
-TEST(svg, segments)
+TEST(svg, shapes)
 {
   {
     auto svg = kinu::svg::svg_t::from_file(SVG_FOLDER"/square-10mm.svg");
-    auto segments = svg.segments(1);
-    EXPECT_EQ(4, segments.size());
-    segments = svg.segments(10);
-    EXPECT_EQ(4, segments.size());
-    segments = svg.segments(100);
-    EXPECT_EQ(4, segments.size());
-    segments = svg.segments(1000);
-    EXPECT_EQ(4, segments.size());
+    auto shapes = svg.shapes(1);
+    EXPECT_EQ(4, shapes.size());
+    shapes = svg.shapes(10);
+    EXPECT_EQ(4, shapes.size());
+    shapes = svg.shapes(100);
+    EXPECT_EQ(4, shapes.size());
+    shapes = svg.shapes(1000);
+    EXPECT_EQ(4, shapes.size());
   }
   {
     auto svg = kinu::svg::svg_t::from_file(SVG_FOLDER"/groups.svg");
-    auto segments = svg.segments(1);
-    EXPECT_EQ(36, segments.size());
-    segments = svg.segments(10);
-    EXPECT_EQ(36, segments.size());
-    segments = svg.segments(100);
-    EXPECT_EQ(36, segments.size());
-    segments = svg.segments(1000);
-    EXPECT_EQ(36, segments.size());
+    auto shapes = svg.shapes(1);
+    EXPECT_EQ(36, shapes.size());
+    shapes = svg.shapes(10);
+    EXPECT_EQ(36, shapes.size());
+    shapes = svg.shapes(100);
+    EXPECT_EQ(36, shapes.size());
+    shapes = svg.shapes(1000);
+    EXPECT_EQ(36, shapes.size());
   }
   {
     auto svg = kinu::svg::svg_t::from_file(SVG_FOLDER"/circle-10mm.svg");
-    auto segments = svg.segments(1);
-    EXPECT_EQ(5, segments.size());
-    for (const auto& segment : segments)
+    auto shapes = svg.shapes(1);
+    EXPECT_EQ(5, shapes.size());
+    for (const auto& shape : shapes)
     {
-      EXPECT_EQ(2, segment.size());
+      EXPECT_EQ(2, shape.size());
     }
-    segments = svg.segments(10);
-    EXPECT_EQ(5, segments.size());
-    for (const auto& segment : segments)
+    shapes = svg.shapes(10);
+    EXPECT_EQ(5, shapes.size());
+    for (const auto& shape : shapes)
     {
-      EXPECT_EQ(11, segment.size());
+      EXPECT_EQ(11, shape.size());
     }
-    segments = svg.segments(100);
-    EXPECT_EQ(5, segments.size());
-    for (const auto& segment : segments)
+    shapes = svg.shapes(100);
+    EXPECT_EQ(5, shapes.size());
+    for (const auto& shape : shapes)
     {
-      EXPECT_EQ(101, segment.size());
+      EXPECT_EQ(101, shape.size());
     }
-    segments = svg.segments(1000);
-    EXPECT_EQ(5, segments.size());
-    for (const auto& segment : segments)
+    shapes = svg.shapes(1000);
+    EXPECT_EQ(5, shapes.size());
+    for (const auto& shape : shapes)
     {
-      EXPECT_EQ(1001, segment.size());
+      EXPECT_EQ(1001, shape.size());
     }
   }
 }
@@ -112,10 +112,18 @@ TEST(svg, segments)
 TEST(svg, stress)
 {
   auto svg = kinu::svg::svg_t::from_file(SVG_FOLDER"/stress.svg");
+
   auto before = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-  auto segments = svg.segments(1000);
+  auto shapes = svg.shapes(1000);
   auto after = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
   auto took = after-before;
 
-  std::cout << "took " << took << "ms to compute " << segments.size() << " segments" << std::endl;
+  size_t shape_cnt = shapes.size();
+  size_t segment_cnt = 0;
+  for (const auto& shape : shapes)
+  {
+    segment_cnt += shape.size();
+  }
+
+  std::cout << "took " << took << "ms to compute " << shape_cnt << " shapes & " << segment_cnt << " segments" << std::endl;
 }

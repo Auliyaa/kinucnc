@@ -4,10 +4,11 @@
 #include <list>
 #include <tuple>
 #include <string>
-
 #include <memory>
-
 #include <thread>
+#include <functional>
+
+#include <tinysplinecxx.h>
 
 namespace kinu::svg
 {
@@ -16,6 +17,9 @@ class svg_t
 {
 public:
   using shape_t = std::list<std::tuple<double,double>>;
+  using bspline_processor_t = std::function<svg_t::shape_t(const tinyspline::BSpline&,size_t)>;
+
+  static svg_t::shape_t default_processor(const tinyspline::BSpline&,size_t);
 
   static constexpr const double DPI = 96.0;
 
@@ -29,7 +33,7 @@ public:
   std::vector<svg_t> subgroups() const;
   std::string id() const;
 
-  std::vector<shape_t> segments(size_t lsteps=100, size_t thread_count=std::thread::hardware_concurrency()) const;
+  std::vector<shape_t> shapes(size_t lsteps=100, bspline_processor_t processor=&default_processor,size_t thread_count=std::thread::hardware_concurrency()) const;
 
 private:
   std::string _data;

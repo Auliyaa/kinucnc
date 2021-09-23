@@ -68,24 +68,25 @@ std::string svg_t::id() const
   return _id;
 }
 
-svg_t::shape_t svg_t::default_processor(const tinyspline::BSpline& spline, size_t lsteps)
+void svg_t::default_processor(shape_t& out, const tinyspline::BSpline& spline, size_t lsteps)
 {
-  svg_t::shape_t res;
   for (size_t lstep=0; lstep<=lsteps;++lstep)
   {
     auto p = spline.eval(double(lstep)/double(lsteps)).result();
-    res.push_back({p[0],p[1]});
+    out.emplace_back(std::tuple<double,double>{p[0],p[1]});
   }
-  return res;
 }
 
-std::vector<svg_t::shape_t> svg_t::shapes(size_t lsteps, bspline_processor_t processor, size_t thread_count) const
+std::deque<svg_t::shape_t> svg_t::shapes(size_t lsteps, bspline_processor_t processor, size_t thread_count) const
 {
-  std::vector<std::vector<svg_t::shape_t>> buckets(thread_count);
+  std::vector<std::deque<svg_t::shape_t>> buckets(thread_count);
   ctpl::thread_pool pool;
   pool.resize(thread_count);
   auto worker = [&](int id, NSVGpath* path) -> void
   {
+    size_t bucket_off=buckets[id].size();
+    buckets[id].resize(buckets[id].size() + path->npts-1);
+
     for (size_t ii = 0; ii < path->npts-1; ii += 3)
     {
       float* p = &path->pts[ii*2];
@@ -98,8 +99,7 @@ std::vector<svg_t::shape_t> svg_t::shapes(size_t lsteps, bspline_processor_t pro
                                 p[6],p[7]
                               });
 
-      shape_t shape = processor(spline,lsteps);
-      buckets[id].emplace_back(shape);
+      processor(buckets[id][bucket_off+ii],spline,lsteps);
     }
   };
 
@@ -120,7 +120,7 @@ std::vector<svg_t::shape_t> svg_t::shapes(size_t lsteps, bspline_processor_t pro
   pool.stop(true); // wait for generation
 
   // merge buckets
-  std::vector<svg_t::shape_t> result;
+  std::deque<svg_t::shape_t> result;
   for (const auto& bucket : buckets)
   {
     result.insert(result.end(), bucket.begin(), bucket.end());

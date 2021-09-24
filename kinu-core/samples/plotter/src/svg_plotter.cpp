@@ -12,6 +12,11 @@ svg_plotter::svg_plotter(QWidget* parent)
     _ui{new Ui::svg_plotter}
 {
   _ui->setupUi(this);
+  if (QApplication::arguments().size() >= 2)
+  {
+    _svg = kinu::core::svg_t::from_file(QApplication::arguments().at(1).toStdString());
+    compute_paths();
+  }
 }
 
 svg_plotter::~svg_plotter()
@@ -27,27 +32,46 @@ void svg_plotter::paintEvent(QPaintEvent* event)
   auto px_dim = std::min<int>(_ui->plot->width(),_ui->plot->height());
   p.setPen(QColor(255,0,0));
   p.drawRect(0,0,px_dim,px_dim);
-  p.setPen(QColor(0,0,0));
 
   auto px_scale = [this](double mm) -> double
   {
     return static_cast<double>(mm * std::min<int>(_ui->plot->width(),_ui->plot->height())) / std::max<double>(_ui->spin_height->value(), _ui->spin_width->value());
   };
 
-  for (const auto& path : _paths)
+  auto plot = [&](const decltype(_shapes_default)& shapes)
   {
-    auto [x1,y1] = path.front();
-    for (const auto& [x2,y2] : path)
+    for (const auto& shape : shapes)
     {
-      if (x1 != x2 || y1 != y2)
+      for (const auto& path : shape)
       {
-        p.drawLine(px_scale(x1), px_scale(y1),
-                   px_scale(x2), px_scale(y2));
+        if (path.empty()) continue;
+        auto [x1,y1] = path.front();
+        for (const auto& [x2,y2] : path)
+        {
+          if (x1 != x2 || y1 != y2)
+          {
+            p.drawLine(px_scale(x1), px_scale(y1),
+                       px_scale(x2), px_scale(y2));
+          }
+          x1 = x2;
+          y1 = y2;
+        }
       }
-      x1 = x2;
-      y1 = y2;
     }
+  };
+
+  if (_ui->check_default->isChecked())
+  {
+    p.setPen(QColor(0,0,0));
+    plot(_shapes_default);
   }
+
+  if (_ui->check_inside->isChecked())
+  {
+    p.setPen(QColor(0,0,255));
+    plot(_shapes_inside);
+  }
+
 }
 
 void svg_plotter::load_svg()
@@ -59,8 +83,29 @@ void svg_plotter::load_svg()
 
 void svg_plotter::compute_paths()
 {
-  _paths.clear();
-  _svg.paths(_paths, _ui->lsteps_spin->value(), kinu::core::bspline_processors::default_processor, 1);
+
+  if (_ui->check_default->isChecked())
+  {
+    _shapes_default.clear();
+    _svg.shapes(_shapes_default, _ui->lsteps_spin->value(), kinu::core::shape_processors::default_processor);
+  }
+
+  if (_ui->check_inside->isChecked())
+  {
+    _shapes_inside.clear();
+    double s = -1. * static_cast<double>(_ui->spin_tool_diam->value())/2.;
+
+    kinu::core::shape_processor_t p = std::bind(&kinu::core::shape_processors::shift,
+                                                s, s,
+                                                std::placeholders::_1,
+                                                std::placeholders::_2,
+                                                std::placeholders::_3);
+
+    _svg.shapes(_shapes_inside,
+                _ui->lsteps_spin->value(),
+                p,1);
+  }
+
   repaint();
 }
 

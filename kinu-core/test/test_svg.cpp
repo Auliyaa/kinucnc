@@ -61,63 +61,63 @@ TEST(svg, shapes)
   {
     auto svg = kinu::core::svg_t::from_file(SVG_FOLDER"/square-10mm.svg");
 
-    std::vector<kinu::core::path_t> paths;
-    EXPECT_TRUE(svg.paths(paths,1));
-    EXPECT_EQ(1, paths.size());
-    paths.clear();
-    EXPECT_TRUE(svg.paths(paths,10));
-    EXPECT_EQ(1, paths.size());
-    paths.clear();
-    EXPECT_TRUE(svg.paths(paths,100));
-    EXPECT_EQ(1, paths.size());
-    paths.clear();
-    EXPECT_TRUE(svg.paths(paths,1000));
-    EXPECT_EQ(1, paths.size());
+    std::vector<kinu::core::shape_t> shapes;
+    EXPECT_TRUE(svg.shapes(shapes,1));
+    EXPECT_EQ(1, shapes.size());
+    shapes.clear();
+    EXPECT_TRUE(svg.shapes(shapes,10));
+    EXPECT_EQ(1, shapes.size());
+    shapes.clear();
+    EXPECT_TRUE(svg.shapes(shapes,100));
+    EXPECT_EQ(1, shapes.size());
+    shapes.clear();
+    EXPECT_TRUE(svg.shapes(shapes,1000));
+    EXPECT_EQ(1, shapes.size());
   }
   {
     auto svg = kinu::core::svg_t::from_file(SVG_FOLDER"/groups.svg");
-    std::vector<kinu::core::path_t> paths;
-    EXPECT_TRUE(svg.paths(paths,1));
-    EXPECT_EQ(9, paths.size());
-    paths.clear();
-    EXPECT_TRUE(svg.paths(paths,10));
-    EXPECT_EQ(9, paths.size());
-    paths.clear();
-    EXPECT_TRUE(svg.paths(paths,100));
-    EXPECT_EQ(9, paths.size());
-    paths.clear();
-    EXPECT_TRUE(svg.paths(paths,1000));
-    EXPECT_EQ(9, paths.size());
+    std::vector<kinu::core::shape_t> shapes;
+    EXPECT_TRUE(svg.shapes(shapes,1));
+    EXPECT_EQ(9, shapes.size());
+    shapes.clear();
+    EXPECT_TRUE(svg.shapes(shapes,10));
+    EXPECT_EQ(9, shapes.size());
+    shapes.clear();
+    EXPECT_TRUE(svg.shapes(shapes,100));
+    EXPECT_EQ(9, shapes.size());
+    shapes.clear();
+    EXPECT_TRUE(svg.shapes(shapes,1000));
+    EXPECT_EQ(9, shapes.size());
   }
   {
     auto svg = kinu::core::svg_t::from_file(SVG_FOLDER"/circle-10mm.svg");
-    std::vector<kinu::core::path_t> paths;
-    EXPECT_TRUE(svg.paths(paths,1));
-    EXPECT_EQ(1, paths.size());
-    for (const auto& path : paths)
+    std::vector<kinu::core::shape_t> shapes;
+    EXPECT_TRUE(svg.shapes(shapes,1));
+    EXPECT_EQ(1, shapes.size());
+    for (const auto& shape : shapes)
     {
-      EXPECT_EQ(10, path.size());
+      EXPECT_EQ(10, shape.size());
     }
-    paths.clear();
-    EXPECT_TRUE(svg.paths(paths,10));
-    EXPECT_EQ(1, paths.size());
-    for (const auto& path : paths)
+    shapes.clear();
+    EXPECT_TRUE(svg.shapes(shapes,10));
+    EXPECT_EQ(1, shapes.size());
+    for (const auto& shape : shapes)
     {
-      EXPECT_EQ(50, path.size());
+      EXPECT_EQ(50, shape.size());
     }
-    paths.clear();
-    EXPECT_TRUE(svg.paths(paths,100));
-    EXPECT_EQ(1, paths.size());
-    for (const auto& path : paths)
+    shapes.clear();
+    EXPECT_TRUE(svg.shapes(shapes,100));
+    EXPECT_EQ(1, shapes.size());
+    for (const auto& shape : shapes)
     {
-      EXPECT_EQ(505, path.size());
+      EXPECT_EQ(505, shape.size());
     }
-    paths.clear();
-    EXPECT_TRUE(svg.paths(paths,1000));
-    EXPECT_EQ(1, paths.size());
-    for (const auto& path : paths)
+    shapes.clear();
+    EXPECT_TRUE(svg.shapes(shapes,1000));
+    EXPECT_EQ(1, shapes.size());
+    for (const auto& shape : shapes)
     {
-      EXPECT_EQ(5005, path.size());
+      EXPECT_EQ(5005, shape.size());
     }
   }
 }
@@ -126,17 +126,17 @@ TEST(svg, stress)
 {
   auto svg = kinu::core::svg_t::from_file(SVG_FOLDER"/stress.svg");
 
-  std::vector<kinu::core::path_t> paths;
+  std::vector<kinu::core::shape_t> shapes;
   auto before = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-  svg.paths(paths,1000);
+  svg.shapes(shapes,1000);
   auto after = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
   auto took = after-before;
 
-  size_t path_cnt = paths.size();
+  size_t path_cnt = shapes.size();
   size_t segment_cnt = 0;
-  for (const auto& path : paths)
+  for (const auto& shape : shapes)
   {
-    segment_cnt += path.size();
+    segment_cnt += shape.size();
   }
 
   std::cout << "took " << took << "ms to compute " << path_cnt << " paths & " << segment_cnt << " segments" << std::endl;

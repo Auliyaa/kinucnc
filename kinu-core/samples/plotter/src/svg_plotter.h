@@ -28,5 +28,6 @@ private:
   std::unique_ptr<Ui::svg_plotter> _ui;
 
   kinu::core::svg_t _svg;
-  std::vector<kinu::core::path_t> _paths;
+  std::vector<kinu::core::shape_t> _shapes_default;
+  std::vector<kinu::core::shape_t> _shapes_inside;
 };

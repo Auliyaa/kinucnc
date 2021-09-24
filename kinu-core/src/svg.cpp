@@ -68,10 +68,10 @@ std::string svg_t::id() const
   return _id;
 }
 
-bool svg_t::paths(std::vector<path_t>& out,
-                  size_t lsteps,
-                  bspline_processor_t processor,
-                  size_t thread_count) const
+bool svg_t::shapes(std::vector<shape_t>& out,
+                   size_t lsteps,
+                   shape_processor_t processor,
+                   size_t thread_count) const
 {
   if (!out.empty()) return false;
 
@@ -79,62 +79,56 @@ bool svg_t::paths(std::vector<path_t>& out,
   std::string data_cpy(_data.c_str(), _data.size());
   auto img = nsvgParse(const_cast<char*>(data_cpy.c_str()), "mm", DPI);
 
-  // count the total number of paths to generate
-  size_t path_cnt{0};
+  // pre-allocate everything
   {
+    size_t shape_cnt{0};
     auto shape = img->shapes;
     while (shape != nullptr)
     {
+      ++shape_cnt;
+      shape = shape->next;
+    }
+    out.resize(shape_cnt);
+  }
+  {
+    size_t shape_idx{0};
+    auto shape = img->shapes;
+    while (shape != nullptr)
+    {
+      size_t path_cnt{0};
       auto path = shape->paths;
       while (path != nullptr)
       {
         ++path_cnt;
         path = path->next;
       }
+      out[shape_idx].resize(path_cnt);
+
+      ++shape_idx;
       shape = shape->next;
     }
   }
-
-  // prepare the output storage for all workers
-  out.resize(path_cnt);
 
   // thread pool
   ctpl::thread_pool pool;
   pool.resize(thread_count);
 
-  // each worker flattens all bsplines from a svg path and pushes it into a the resulting structure
-  auto worker = [&](int id, size_t out_idx, NSVGpath* path) -> void
+  shape_processor_params_t params{lsteps};
+
+  // each worker flattens all bsplines from a svg shape and pushes it into a the resulting structure
+  auto worker = [&](int id, size_t out_idx, NSVGshape* shape) -> void
   {
-    for (size_t ii = 0; ii < path->npts-1; ii += 3)
-    {
-      float* p = &path->pts[ii*2];
-
-      tinyspline::BSpline spline(4,2,3);  // 4 control points, 2D, cubic spline
-      spline.setControlPoints({
-                                p[0],p[1],
-                                p[2],p[3],
-                                p[4],p[5],
-                                p[6],p[7]
-                              });
-
-      // forward to processor for any additional geometric transformation before flattening
-      processor(out[out_idx],spline,lsteps);
-    }
+    // forward to processor for any additional geometric transformation & flattening
+    processor(out[out_idx],shape,params);
   };
-
 
   // recurse over all svg elements and spawn worker threads
   size_t out_idx{0};
   auto shape = img->shapes;
   while (shape != nullptr)
   {
-    auto path = shape->paths;
-    while (path != nullptr)
-    {
-      pool.push(std::bind(worker, std::placeholders::_1, out_idx, path));
-      path = path->next;
-      ++out_idx;
-    }
+    pool.push(std::bind(worker, std::placeholders::_1, out_idx, shape));
+    ++out_idx;
     shape = shape->next;
   }
   pool.stop(true); // wait for workers to finish

@@ -8,7 +8,7 @@
 #include <memory>
 #include <thread>
 
-#include <kinu/bspline_processors.h>
+#include <kinu/shape_processors.h>
 
 namespace kinu::core
 {
@@ -30,10 +30,10 @@ public:
   std::vector<svg_t> subgroups() const;
   std::string id() const;
 
-  bool paths(std::vector<path_t>& out,
-             size_t lsteps=100,
-             bspline_processor_t processor=&bspline_processors::default_processor,
-             size_t thread_count=std::thread::hardware_concurrency()) const;
+  bool shapes(std::vector<shape_t>& out,
+              size_t lsteps=100,
+              shape_processor_t processor=&shape_processors::default_processor,
+              size_t thread_count=std::thread::hardware_concurrency()) const;
 
 private:
   std::string _data;

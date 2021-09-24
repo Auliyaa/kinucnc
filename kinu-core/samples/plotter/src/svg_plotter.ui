@@ -69,17 +69,17 @@
          <string>Machine</string>
         </property>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Width (mm)</string>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="0">
           <widget class="QLabel" name="label_3">
            <property name="text">
             <string>Height (mm)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Width (mm)</string>
            </property>
           </widget>
          </item>
@@ -89,7 +89,7 @@
             <number>1000</number>
            </property>
            <property name="value">
-            <number>500</number>
+            <number>100</number>
            </property>
           </widget>
          </item>
@@ -99,7 +99,54 @@
             <number>1000</number>
            </property>
            <property name="value">
-            <number>500</number>
+            <number>100</number>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Tool diameter (mm)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QSpinBox" name="spin_tool_diam">
+           <property name="value">
+            <number>3</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_2">
+        <property name="title">
+         <string>Processors</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QCheckBox" name="check_default">
+           <property name="text">
+            <string>default</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="check_inside">
+           <property name="text">
+            <string>inside</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="check_outside">
+           <property name="text">
+            <string>outside</string>
            </property>
           </widget>
          </item>
@@ -186,6 +233,70 @@
     <hint type="sourcelabel">
      <x>224</x>
      <y>174</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>598</x>
+     <y>415</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spin_tool_diam</sender>
+   <signal>valueChanged(QString)</signal>
+   <receiver>svg_plotter</receiver>
+   <slot>compute_paths()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>232</x>
+     <y>209</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>598</x>
+     <y>415</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>check_default</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>svg_plotter</receiver>
+   <slot>compute_paths()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>158</x>
+     <y>289</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>598</x>
+     <y>415</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>check_inside</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>svg_plotter</receiver>
+   <slot>compute_paths()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>158</x>
+     <y>321</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>598</x>
+     <y>415</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>check_outside</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>svg_plotter</receiver>
+   <slot>compute_paths()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>158</x>
+     <y>353</y>
     </hint>
     <hint type="destinationlabel">
      <x>598</x>

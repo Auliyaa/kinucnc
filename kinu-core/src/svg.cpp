@@ -68,8 +68,6 @@ std::string svg_t::id() const
   return _id;
 }
 
-#include <iostream>
-
 void svg_t::default_processor(path_t& out, const tinyspline::BSpline& spline, size_t lsteps)
 {
   // FIXME: this can skip points. Ensure we have first and last

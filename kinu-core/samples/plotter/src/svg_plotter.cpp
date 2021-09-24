@@ -11,7 +11,6 @@ svg_plotter::svg_plotter(QWidget* parent)
   : QWidget(parent),
     _ui{new Ui::svg_plotter}
 {
-  std::cout << __PRETTY_FUNCTION__ << std::endl;
   _ui->setupUi(this);
 }
 
@@ -22,18 +21,17 @@ svg_plotter::~svg_plotter()
 
 void svg_plotter::paintEvent(QPaintEvent* event)
 {
-  std::cout << __PRETTY_FUNCTION__ << std::endl;
   QPainter p(this);
   p.translate(_ui->plot->pos());
 
-  // FIXME: scaling is broken
-  auto xscale = [this](double x) -> double
+  auto px_dim = std::min<int>(_ui->plot->width(),_ui->plot->height());
+  p.setPen(QColor(255,0,0));
+  p.drawRect(0,0,px_dim,px_dim);
+  p.setPen(QColor(0,0,0));
+
+  auto px_scale = [this](double mm) -> double
   {
-    return static_cast<double>(x * std::min<int>(_ui->plot->width(),_ui->plot->height())) / static_cast<double>(_ui->spin_width->value());
-  };
-  auto yscale = [this](double x) -> double
-  {
-    return static_cast<double>(x * std::min<int>(_ui->plot->width(),_ui->plot->height())) / static_cast<double>(_ui->spin_height->value());
+    return static_cast<double>(mm * std::min<int>(_ui->plot->width(),_ui->plot->height())) / std::max<double>(_ui->spin_height->value(), _ui->spin_width->value());
   };
 
   for (const auto& path : _paths)
@@ -43,8 +41,8 @@ void svg_plotter::paintEvent(QPaintEvent* event)
     {
       if (x1 != x2 || y1 != y2)
       {
-        p.drawLine(xscale(x1), yscale(y1),
-                   xscale(x2), yscale(y2));
+        p.drawLine(px_scale(x1), px_scale(y1),
+                   px_scale(x2), px_scale(y2));
       }
       x1 = x2;
       y1 = y2;
@@ -54,7 +52,6 @@ void svg_plotter::paintEvent(QPaintEvent* event)
 
 void svg_plotter::load_svg()
 {
-  std::cout << __PRETTY_FUNCTION__ << std::endl;
   auto svg_path = QFileDialog::getOpenFileName(this, "Open SVG", "", "Image files (*.svg)");
   _svg = kinu::core::svg_t::from_file(svg_path.toStdString());
   compute_paths();
@@ -62,7 +59,6 @@ void svg_plotter::load_svg()
 
 void svg_plotter::compute_paths()
 {
-  std::cout << __PRETTY_FUNCTION__ << std::endl;
   _paths.clear();
   _svg.paths(_paths, _ui->lsteps_spin->value(), kinu::core::svg_t::default_processor, 1);
   repaint();

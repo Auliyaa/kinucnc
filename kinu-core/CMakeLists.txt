@@ -7,6 +7,7 @@ target_link_libraries(kinu-svg PUBLIC
   nanosvg
   pugixml::shared
   tinyspline::static
+  Threads::Threads
   ctpl
 )
 
@@ -17,3 +18,7 @@ target_include_directories(kinu-svg PUBLIC
 if(KINU_TESTS)
   add_subdirectory(test)
 endif(KINU_TESTS)
+
+if(KINU_SAMPLES)
+  add_subdirectory(samples)
+endif(KINU_SAMPLES)

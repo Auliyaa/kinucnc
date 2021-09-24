@@ -11,7 +11,7 @@
 
 #include <ctpl_stl.h>
 
-using namespace kinu::svg;
+using namespace kinu::core;
 
 // undo px conversion made by nanosvg, round to 1/1000
 template<typename T>
@@ -29,7 +29,7 @@ svg_t svg_t::from_file(const std::string& path)
   }
 
   std::string contents((std::istreambuf_iterator<char>(fd)), std::istreambuf_iterator<char>());
-  return std::move(svg_t{contents, path}); // TODO: extract filename
+  return svg_t{contents, path}; // TODO: extract filename
 }
 
 svg_t::svg_t(const std::string& data, const std::string& id)
@@ -68,25 +68,55 @@ std::string svg_t::id() const
   return _id;
 }
 
-void svg_t::default_processor(shape_t& out, const tinyspline::BSpline& spline, size_t lsteps)
+#include <iostream>
+
+void svg_t::default_processor(path_t& out, const tinyspline::BSpline& spline, size_t lsteps)
 {
-  for (size_t lstep=0; lstep<=lsteps;++lstep)
+  // FIXME: this can skip points. Ensure we have first and last
+  for (float lstep=0; lstep<=1.0; lstep+=1.0/static_cast<float>(lsteps))
   {
-    auto p = spline.eval(double(lstep)/double(lsteps)).result();
+    auto p = spline.eval(lstep).result();
     out.emplace_back(std::tuple<double,double>{p[0],p[1]});
   }
 }
 
-std::deque<svg_t::shape_t> svg_t::shapes(size_t lsteps, bspline_processor_t processor, size_t thread_count) const
+bool svg_t::paths(std::vector<path_t>& out,
+                  size_t lsteps,
+                  bspline_processor_t processor,
+                  size_t thread_count) const
 {
-  std::vector<std::deque<svg_t::shape_t>> buckets(thread_count);
+  if (!out.empty()) return false;
+
+  // parse svg data (use a copy since nanosvg modifies the actual string
+  std::string data_cpy(_data.c_str(), _data.size());
+  auto img = nsvgParse(const_cast<char*>(data_cpy.c_str()), "mm", DPI);
+
+  // count the total number of paths to generate
+  size_t path_cnt{0};
+  {
+    auto shape = img->shapes;
+    while (shape != nullptr)
+    {
+      auto path = shape->paths;
+      while (path != nullptr)
+      {
+        ++path_cnt;
+        path = path->next;
+      }
+      shape = shape->next;
+    }
+  }
+
+  // prepare the output storage for all workers
+  out.resize(path_cnt);
+
+  // thread pool
   ctpl::thread_pool pool;
   pool.resize(thread_count);
-  auto worker = [&](int id, NSVGpath* path) -> void
-  {
-    size_t bucket_off=buckets[id].size();
-    buckets[id].resize(buckets[id].size() + path->npts-1);
 
+  // each worker flattens all bsplines from a svg path and pushes it into a the resulting structure
+  auto worker = [&](int id, size_t out_idx, NSVGpath* path) -> void
+  {
     for (size_t ii = 0; ii < path->npts-1; ii += 3)
     {
       float* p = &path->pts[ii*2];
@@ -99,34 +129,29 @@ std::deque<svg_t::shape_t> svg_t::shapes(size_t lsteps, bspline_processor_t proc
                                 p[6],p[7]
                               });
 
-      processor(buckets[id][bucket_off+ii],spline,lsteps);
+      // forward to processor for any additional geometric transformation before flattening
+      processor(out[out_idx],spline,lsteps);
     }
   };
 
-  std::string data_cpy(_data.c_str(), _data.size());
-  auto img = nsvgParse(const_cast<char*>(data_cpy.c_str()), "mm", DPI);
 
+  // recurse over all svg elements and spawn worker threads
+  size_t out_idx{0};
   auto shape = img->shapes;
   while (shape != nullptr)
   {
     auto path = shape->paths;
     while (path != nullptr)
     {
-      pool.push(std::bind(worker, std::placeholders::_1, path));
+      pool.push(std::bind(worker, std::placeholders::_1, out_idx, path));
       path = path->next;
+      ++out_idx;
     }
     shape = shape->next;
   }
-  pool.stop(true); // wait for generation
-
-  // merge buckets
-  std::deque<svg_t::shape_t> result;
-  for (const auto& bucket : buckets)
-  {
-    result.insert(result.end(), bucket.begin(), bucket.end());
-  }
+  pool.stop(true); // wait for workers to finish
 
   nsvgDelete(img);
 
-  return result;
+  return true;
 }

@@ -61,7 +61,7 @@ TEST(svg, shapes)
   {
     auto svg = kinu::core::svg_t::from_file(SVG_FOLDER"/square-10mm.svg");
 
-    std::vector<kinu::core::svg_t::path_t> paths;
+    std::vector<kinu::core::path_t> paths;
     EXPECT_TRUE(svg.paths(paths,1));
     EXPECT_EQ(1, paths.size());
     paths.clear();
@@ -76,7 +76,7 @@ TEST(svg, shapes)
   }
   {
     auto svg = kinu::core::svg_t::from_file(SVG_FOLDER"/groups.svg");
-    std::vector<kinu::core::svg_t::path_t> paths;
+    std::vector<kinu::core::path_t> paths;
     EXPECT_TRUE(svg.paths(paths,1));
     EXPECT_EQ(9, paths.size());
     paths.clear();
@@ -91,7 +91,7 @@ TEST(svg, shapes)
   }
   {
     auto svg = kinu::core::svg_t::from_file(SVG_FOLDER"/circle-10mm.svg");
-    std::vector<kinu::core::svg_t::path_t> paths;
+    std::vector<kinu::core::path_t> paths;
     EXPECT_TRUE(svg.paths(paths,1));
     EXPECT_EQ(1, paths.size());
     for (const auto& path : paths)
@@ -126,7 +126,7 @@ TEST(svg, stress)
 {
   auto svg = kinu::core::svg_t::from_file(SVG_FOLDER"/stress.svg");
 
-  std::vector<kinu::core::svg_t::path_t> paths;
+  std::vector<kinu::core::path_t> paths;
   auto before = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
   svg.paths(paths,1000);
   auto after = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();

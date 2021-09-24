@@ -60,7 +60,7 @@ void svg_plotter::load_svg()
 void svg_plotter::compute_paths()
 {
   _paths.clear();
-  _svg.paths(_paths, _ui->lsteps_spin->value(), kinu::core::svg_t::default_processor, 1);
+  _svg.paths(_paths, _ui->lsteps_spin->value(), kinu::core::bspline_processors::default_processor, 1);
   repaint();
 }
 

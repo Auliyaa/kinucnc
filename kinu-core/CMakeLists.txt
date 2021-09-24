@@ -1,6 +1,7 @@
 # target: kinu-svg
 add_library(kinu-svg STATIC
   src/svg.cpp
+  src/bspline_processors.cpp
 )
 
 target_link_libraries(kinu-svg PUBLIC

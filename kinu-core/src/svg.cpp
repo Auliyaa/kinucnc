@@ -68,16 +68,6 @@ std::string svg_t::id() const
   return _id;
 }
 
-void svg_t::default_processor(path_t& out, const tinyspline::BSpline& spline, size_t lsteps)
-{
-  // FIXME: this can skip points. Ensure we have first and last
-  for (float lstep=0; lstep<=1.0; lstep+=1.0/static_cast<float>(lsteps))
-  {
-    auto p = spline.eval(lstep).result();
-    out.emplace_back(std::tuple<double,double>{p[0],p[1]});
-  }
-}
-
 bool svg_t::paths(std::vector<path_t>& out,
                   size_t lsteps,
                   bspline_processor_t processor,

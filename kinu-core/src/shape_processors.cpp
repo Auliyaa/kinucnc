@@ -77,24 +77,3 @@ void shape_processors::shift(double sx, double sy, shape_t& out, NSVGshape* in, 
   }
 }
 
-std::tuple<double, double> centroid(path_t& path)
-{
-  double rx=0, ry=0;
-
-  double signed_area=0;
-  for (size_t ii=0; ii < path.size(); ++ii)
-  {
-    auto& [x0,y0] = path[ii];
-    auto& [x1,y1] = path[(ii+1)%path.size()];
-    double a=(x0*y1) - (x1*y0);
-    signed_area+=a;
-    rx += (x0+x1)*a;
-    ry += (y0+y1)*a;
-  }
-  signed_area *= .5;
-  rx /= (6*signed_area);
-  ry /= (6*signed_area);
-
-  return {rx,ry};
-}
-

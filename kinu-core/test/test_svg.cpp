@@ -89,37 +89,6 @@ TEST(svg, shapes)
     EXPECT_TRUE(svg.shapes(shapes,1000));
     EXPECT_EQ(9, shapes.size());
   }
-  {
-    auto svg = kinu::core::svg_t::from_file(SVG_FOLDER"/circle-10mm.svg");
-    std::vector<kinu::core::shape_t> shapes;
-    EXPECT_TRUE(svg.shapes(shapes,1));
-    EXPECT_EQ(1, shapes.size());
-    for (const auto& shape : shapes)
-    {
-      EXPECT_EQ(10, shape.size());
-    }
-    shapes.clear();
-    EXPECT_TRUE(svg.shapes(shapes,10));
-    EXPECT_EQ(1, shapes.size());
-    for (const auto& shape : shapes)
-    {
-      EXPECT_EQ(50, shape.size());
-    }
-    shapes.clear();
-    EXPECT_TRUE(svg.shapes(shapes,100));
-    EXPECT_EQ(1, shapes.size());
-    for (const auto& shape : shapes)
-    {
-      EXPECT_EQ(505, shape.size());
-    }
-    shapes.clear();
-    EXPECT_TRUE(svg.shapes(shapes,1000));
-    EXPECT_EQ(1, shapes.size());
-    for (const auto& shape : shapes)
-    {
-      EXPECT_EQ(5005, shape.size());
-    }
-  }
 }
 
 TEST(svg, stress)

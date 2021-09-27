@@ -101,12 +101,20 @@ TEST(svg, stress)
   auto after = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
   auto took = after-before;
 
-  size_t path_cnt = shapes.size();
-  size_t segment_cnt = 0;
+  size_t shape_cnt = shapes.size();
+  size_t path_cnt = 0;
+  size_t pt_cnt = 0;
   for (const auto& shape : shapes)
   {
-    segment_cnt += shape.size();
+    path_cnt += shape.size();
+    for (const auto& path : shape)
+    {
+      pt_cnt += path.size();
+    }
   }
 
-  std::cout << "took " << took << "ms to compute " << path_cnt << " paths & " << segment_cnt << " segments" << std::endl;
+  std::cout << "took " << took << "ms to compute " <<
+               path_cnt << " paths -- " <<
+               shape_cnt << " segments -- " <<
+               pt_cnt << " points" << std::endl;
 }

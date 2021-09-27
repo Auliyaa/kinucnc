@@ -30,7 +30,7 @@ void svg_plotter::paintEvent(QPaintEvent* event)
   p.translate(_ui->plot->pos());
 
   auto px_dim = std::min<int>(_ui->plot->width(),_ui->plot->height());
-  p.setPen(QColor(255,0,0));
+  p.setPen(QPen(QColor(255,0,0), _ui->spin_tool_diam->value()));
   p.drawRect(0,0,px_dim,px_dim);
 
   auto px_scale = [this](double mm) -> double
@@ -56,19 +56,22 @@ void svg_plotter::paintEvent(QPaintEvent* event)
           x1 = x2;
           y1 = y2;
         }
+        auto[x2,y2] = path.front();
+        p.drawLine(px_scale(x1), px_scale(y1),
+                   px_scale(x2), px_scale(y2));
       }
     }
   };
 
   if (_ui->check_default->isChecked())
   {
-    p.setPen(QColor(0,0,0));
+    p.setPen(QPen(QColor(0,0,0), _ui->spin_tool_diam->value()));
     plot(_shapes_default);
   }
 
   if (_ui->check_inside->isChecked())
   {
-    p.setPen(QColor(0,0,255));
+    p.setPen(QPen(QColor(0,0,255), _ui->spin_tool_diam->value()));
     plot(_shapes_inside);
   }
 
@@ -93,10 +96,9 @@ void svg_plotter::compute_paths()
   if (_ui->check_inside->isChecked())
   {
     _shapes_inside.clear();
-    double s = -1. * static_cast<double>(_ui->spin_tool_diam->value())/2.;
 
-    kinu::core::shape_processor_t p = std::bind(&kinu::core::shape_processors::shift,
-                                                s, s,
+    kinu::core::shape_processor_t p = std::bind(&kinu::core::shape_processors::inside,
+                                                static_cast<double>(_ui->spin_tool_diam->value()),
                                                 std::placeholders::_1,
                                                 std::placeholders::_2,
                                                 std::placeholders::_3);

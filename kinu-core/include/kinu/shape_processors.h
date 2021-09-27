@@ -20,7 +20,7 @@ using shape_processor_t = std::function<void(shape_t& out, NSVGshape* in, const 
 struct shape_processors
 {
   static void default_processor(shape_t& out, NSVGshape* in, const shape_processor_params_t& params);
-  static void shift(double sx,double sy,shape_t& out, NSVGshape* in, const shape_processor_params_t& params);
+  static void inside(double radius,shape_t& out, NSVGshape* in, const shape_processor_params_t& params);
 };
 
 }

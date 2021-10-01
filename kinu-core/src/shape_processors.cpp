@@ -40,5 +40,7 @@ void shape_processors::default_processor(shape_t& out, NSVGshape* in, const shap
 
 void shape_processors::inside(double radius, shape_t& out, NSVGshape* in, const shape_processor_params_t& params)
 {
+  // start by processing the shape with no shift
   default_processor(out,in,params);
+  // see https://answers.opencv.org/question/67803/how-can-i-resize-an-image-from-the-center/
 }

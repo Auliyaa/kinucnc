@@ -2,6 +2,7 @@
 add_library(kinu-svg STATIC
   src/svg.cpp
   src/shape_processors.cpp
+  src/geometry.cpp
 )
 
 target_link_libraries(kinu-svg PUBLIC
